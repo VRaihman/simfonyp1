@@ -1,0 +1,63 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Add Products, {{date}}</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootswatch/3.3.6/flatly/bootstrap.min.css">
+		<script src='/static/jquery.min.js'></script>
+    </head>
+    <body style="font-size: 14px;">
+        <div class="header">
+            <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+                <div class="container">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="javascript:void(0);">Add Products, {{date}} &nbsp;</a>
+                    <a class="navbar-brand" href="/">Calendar &nbsp;</a>
+					<a class="navbar-brand" href="/cart/{{date}}"><button id="button" type="button" class="btn btn-xs btn-success" onclick="location" >Back</button></a>
+                </div>
+                </div>
+            </div>
+        </div>
+<div class="container slide-animate" id="appContainer" style="margin-top: 81px;">
+<div ng-view="">
+<div class="well">
+    <fieldset> 
+          <table class="table">
+            <thead>
+			  <tr>
+                <th>#</th>
+                <th class="col-sm-3">Product Name</th>
+                <th class="col-sm-3">Amount</th>
+				<th></th>
+              </tr>
+            </thead>
+{{ endHtml | raw }}
+            </tbody>
+          </table>
+    </fieldset>
+</div>
+</div>
+</div>
+<script>
+function ajaxAddProduct(id, date)
+{
+	//alert(id + '-' +date);
+	$('#prod-'+id).hide();
+	$.ajax({
+        url: "/ajax/addProduct",
+        type: "POST",
+        data: 'date=' + date + '&id=' + id ,
+        dataType: 'json',
+        success: function(ee) {
+			console.log(ee.days);
+		}
+	});
+
+}
+
+</script>
+
+</body>
+</html>
