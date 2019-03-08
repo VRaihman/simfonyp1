@@ -1,3 +1,25 @@
-#index:
-#    path: /
-#    controller: App\Controller\DefaultController::index
+index:
+    path:      /{type}
+    controller: App\Controller\ProductsController::indexPage
+    defaults:
+        type: index.php
+    requirements:
+        type: index.php|index.html
+
+product:
+    path:      /product/add/{date}
+    controller: App\Controller\ProductsController::productAdd
+    defaults:
+        date: 0000-00-00
+        
+cart:
+    path:      /cart/{date}
+    controller: App\Controller\ProductsController::cartList
+    defaults:
+        date: 0000-00-00
+        
+ajax:
+    path:      /ajax/{type}
+    controller: App\Controller\ProductsController::jsonPage
+    defaults:
+        type: none

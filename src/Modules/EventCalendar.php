@@ -1,29 +1,25 @@
 <?php
 namespace App\Modules;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+use App\Entity\DbCart;
 
-class EventCalendar
+class EventCalendar extends AbstractController
 {
 	
-	public function __construct()
+	public function getEvents(): ?array
 	{
-		$this->request = Request::createFromGlobals();
+		$request = Request::createFromGlobals();
+		$param = $request->request->get('date', 'def');
+		$arrData = ['days' => $this->getAllEvents() ];
+		return $arrData;
 	}
 	
-	public function getEvents($prod)
+	private function getAllEvents(): ?array
 	{
-		$param = $this->request->request->get('date', 'def');
-		$arrData = ['days' => $this->getAllEvents($prod) ];
-		return new JsonResponse($arrData);
-	}
-	
-	private function getAllEvents($products)
-	{
-		
-		
 		$numDay = date('t');
 		$data = date("Y-m-");
 		$arrayDay = [];
@@ -31,7 +27,7 @@ class EventCalendar
 			if( $i<10 ) $pref = '0';
 			else $pref = '';
 
-			$productArray = $products->loadDay($data . $pref . $i);
+			$productArray = $this->getDoctrine()->getRepository(DbCart::class)->getProdByDay($data . $pref . $i);
 			if( $productArray != [] ){
 				$prefTitle = 'Products in the cart ' . count($productArray);
 			}else{

@@ -28,7 +28,7 @@
           <table class="table">
             <thead>
 			  <tr>
-                <th>#</th>
+                <th></th>
                 <th class="col-sm-3">Product Name</th>
                 <th class="col-sm-3">Amount</th>
                 <th class="col-sm-3">Date</th>
@@ -37,7 +37,20 @@
               </tr>
             </thead>
             <tbody>
-{{ tabelHtml | raw}}
+    {% for prod in prods %}
+		<!-- START {{prod.pid}} -->
+        <tr id="prod-{{prod.pid}}">
+			<td></td>
+			<td>{{prod.name}}</td>
+			<td>{{prod.amount}}</td>
+			<td>{{prod.buydate}}</td>
+			<td>{{prod.updatedate}}</td>
+			<td>
+				<button id="button" type="button" class="btn btn-xs btn-success" onclick="ajaxDeleteProduct('{{prod.pid}}', '{{prod.date}}');" >Delete</button>
+			</td>
+		</tr>
+		<!-- END {{prod.pid}} -->
+    {% endfor %}
             </tbody>
           </table>
     </fieldset>

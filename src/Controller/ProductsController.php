@@ -3,107 +3,145 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Modules\GetConfig;
-use App\Modules\Products;
-use App\Modules\EventCalendar as Calendar;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
+use App\Modules\EventCalendar as Calendar;
+
+use App\Entity\DbProduct;
+use App\Entity\DbCart;
 
 class ProductsController extends AbstractController
 {
-	public function __construct(GetConfig $config)
-	{
-		$this->config = new $config;
-	}
-	
-	
-    /**
-     * @Route("/{type}", defaults={"type": "index.html|index.asp"},)
-     */
+	//{type}
     public function indexPage($type)
     {
         return $this->render('tpl/index.html.twig', []);
     }    
 	
-	/**
-     * @Route("/product/add/{date}", name="product")
-     */
-    public function productAdd($date = 'none', Products $products)
+	//product/add/{date}
+    public function productAdd($date = 'none')
     {
-		$productList = $products->getList();
-		$productDayList = $products->loadDay($date);
-		$endHtml = '';
-		$tplStr = '<tr id="prod-[[pid]]"><td>[[num]]</td><td>[[name]]</td><td>[[amount]]</td><td><button id="button" type="button" class="btn btn-xs btn-success" onclick="ajaxAddProduct(\'[[pid]]\', \'[[date]]\');" >Add to Cart</button></td></tr>';
-		$num = 1;
-		foreach($productList as $key => $product){
-			if(empty($productDayList[$key])){
-				$endHtml .= str_replace(
-					['[[num]]', '[[name]]', '[[amount]]', '[[pid]]', '[[date]]' ],
-					[$num, $product['name'], $product['amount'], $key, $date],
-					$tplStr
-				);
-				$num++;
-			}
-		}
-		
-		if($endHtml == ''){
-			$endHtml = '<tr id="0"><td></td><td></td><td></td><td></td></tr>';
-			
-		}
-		
-		return $this->render('tpl/addproduct.html.twig', [
-            'date' => $date,
-            'endHtml' => $endHtml,
-        ]);
-    }	
-	
-	/**
-     * @Route("/cart/{date}", name="cart")
-     */
-    public function cartList($date = 'none', Products $products)
-    {
-		$productDayList = $products->loadDay($date);
-		
-		$tplStr = '<tr id="prod-[[pid]]">
-		<td></td>
-		<td>[[name]]</td>
-		<td>[[amount]]</td>
-		<td>[[date]]</td>
-		<td>[[updatedate]]</td>
-		<td><button id="button" type="button" class="btn btn-xs btn-success" onclick="ajaxDeleteProduct(\'[[pid]]\', \'[[date]]\');" >Delete</button></td></tr>';
-		$endHtml = '';
+		$productList = $this->getList();
+		$toTwig = array();
 		$num = 0;
-		foreach($productDayList as $key => $product){
-			$endHtml .= str_replace(
-				['[[num]]', '[[name]]', '[[amount]]', '[[pid]]', '[[date]]', '[[date]]', '[[updatedate]]' ],
-				[$num, $product['name'], $product['amount'], $key, $date, $product['date'], $product['updatedate'],],
-				$tplStr
+		foreach($productList as $key => $product){
+			$toTwig[] = array(
+				'num' => $num,
+				'name' => $product->getName(),
+				'amount' => $product->getPrice(),
+				'pid' => $product->getId(),
+				'date' => $date,
 			);
 			$num++;
 		}
 		
+		return $this->render('tpl/addproduct.html.twig', [
+            'date' => $date,
+            'prods' => $toTwig,
+        ]);
+    }	
+	
+	//cart/{date}
+    public function cartList($date = 'none')
+    {
+		$productDayList = $this->getDoctrine()->getRepository(DbCart::class)->getProdByDay($date);
+		
+		$toTwig = array();
+		$num = 0;
+		foreach($productDayList as $key => $product){
+			$toTwig[] = array(
+				'num' => $num,
+				'name' => $product['name'],
+				'amount' => $product['price'],
+				'pid' => $product['idprod'],
+				'date' => $date,
+				'buydate' => $product['dateadd'],
+				'updatedate' => $product['dateupdate'],
+			);
+			$num++;
+		}
         return $this->render('tpl/cart.html.twig', [
             'date' => $date,
-			'tabelHtml' => $endHtml,
+			'prods' => $toTwig,
         ]);
     }    
 	
-
-    /**
-     * @Route("/ajax/{type}", name="ajax")
-     */
-    public function jsonPage($type='all', Calendar $calendar, Products $products)
+	//ajax/{type}
+    public function jsonPage($type='all', Calendar $calendar, Request $request)
     {
+		$day = $request->request->get('date', 'def');
+		$id  = $request->request->get('id', '0');
+		
 		switch ($type) {
 			case 'addProduct':
-				return $products->addProduct();
+				$arrJson = $this->addDBProduct2Cart($day, $id);
 			break;
 			case 'deleteProduct':
-				return $products->deleteProduct2Day();
+				$arrJson = $this->deleteProductCart($day, $id);
 			break;
 
 			case 'getEvents':
 			default:
-				return $calendar->getEvents($products);
-		}  
+				$arrJson = $calendar->getEvents();
+		}
+		
+		return new JsonResponse($arrJson);
     }
+	
+	public function getList(): ?array
+	{
+		return $this->getDoctrine()->getRepository(DbProduct::class)->findAll();
+	}
+	
+	private function addDbProd()
+	{
+        $dbproduct = new DbCart();
+        $dbproduct->setName('Plastic Cup');
+        $dbproduct->setPrice('0.99');
+
+        $entityManager->persist($dbproduct);
+        $entityManager->flush();
+		return $dbproduct;
+	}
+	
+	public function addDBProduct2Cart($day = '', $id = 0)
+	{
+		
+		$productInCartByDay = $this->getDoctrine()->getRepository(DbCart::class)->findByDayId($day, $id);
+		if( count($productInCartByDay) > 0){
+			return ['status' => 'success' ];
+		}
+		
+		$productId = $this->getDoctrine()->getRepository(DbProduct::class)->getProd($id);
+		$productId = (object) $productId[0];
+
+		$entityManager = $this->getDoctrine()->getManager();
+
+        $dbcart = new DbCart();
+        $dbcart->setName($productId->name);
+        $dbcart->setPrice($productId->price);
+        $dbcart->setDateadd(date("Y-m-d H:i:s"));
+        $dbcart->setDateupdate(date("Y-m-d H:i:s"));
+        $dbcart->setDate($day);
+		$dbcart->setIdprod($productId->id);
+
+        // tell Doctrine you want to (eventually) save the Product (no queries yet)
+        $entityManager->persist($dbcart);
+        // actually executes the queries (i.e. the INSERT query)
+        $entityManager->flush();
+		
+		return ['status' => 'success' ];
+	}	
+	
+	public function deleteProductCart($day = '', $id = 0)
+	{
+		$productInCartByDay = $this->getDoctrine()->getRepository(DbCart::class)->findByDayId($day, $id);
+
+		$em = $this->getDoctrine()->getManager();
+		$product = $em->getRepository(DbCart::class)->find($productInCartByDay[0]['id']);
+		$em->remove($product);
+		$em->flush();
+		return ['status' => 'success' ];
+	}
 }

@@ -27,13 +27,24 @@
           <table class="table">
             <thead>
 			  <tr>
-                <th>#</th>
+                <th></th>
                 <th class="col-sm-3">Product Name</th>
                 <th class="col-sm-3">Amount</th>
 				<th></th>
               </tr>
             </thead>
-{{ endHtml | raw }}
+    {% for prod in prods %}
+		<!-- START {{prod.pid}} -->
+        <tr id="prod-{{prod.pid}}">
+			<td></td>
+			<td>{{prod.name}}</td>
+			<td>{{prod.amount}}</td>
+			<td>
+				<button id="button" type="button" class="btn btn-xs btn-success" onclick="ajaxAddProduct('{{prod.pid}}', '{{prod.date}}');" >Add to Cart</button>
+			</td>
+		</tr>
+		<!-- END {{prod.pid}} -->
+    {% endfor %}
             </tbody>
           </table>
     </fieldset>
