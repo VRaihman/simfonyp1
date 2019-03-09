@@ -25,27 +25,27 @@ class DbProductRepository extends ServiceEntityRepository
     
     public function findAll(): ?array
     {
-		$entityManager = $this->getEntityManager();
+        $entityManager = $this->getEntityManager();
 
-		$query = $entityManager->createQuery(
-			'SELECT p
-			FROM App\Entity\DbProduct p'
-		);
+        $query = $entityManager->createQuery(
+            'SELECT p
+            FROM App\Entity\DbProduct p'
+        );
 
-		return $query->execute();
+        return $query->execute();
     }
     
     public function getProd($id): ?array
     {
-		$conn = $this->getEntityManager()->getConnection();
+        $conn = $this->getEntityManager()->getConnection();
 
-		$sql = '
-			SELECT * FROM db_product WHERE id = :id limit 1
+        $sql = '
+            SELECT * FROM db_product WHERE id = :id limit 1
         ';
-		$stmt = $conn->prepare($sql);
-		$stmt->execute(['id' => $id]);
+        $stmt = $conn->prepare($sql);
+        $stmt->execute(['id' => $id]);
 
-		return $stmt->fetchAll();
+        return $stmt->fetchAll();
     }
     /*
     public function findOneBySomeField($value): ?DbProduct
