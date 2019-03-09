@@ -136,7 +136,7 @@ class ProductsController extends AbstractController
 
         $entityManager->persist($dbproduct);
         $entityManager->flush();
-        
+
         return $dbproduct;
     }
     
@@ -262,8 +262,8 @@ class ProductsController extends AbstractController
                ->setFrom('send@testexample.com')
             	->setTo($adminEmail)
             	->setBody(
-                $textMessage,
-                'text/html'
+                	$textMessage,
+                	'text/html'
         );
 
         $this->mailer->send($message);
