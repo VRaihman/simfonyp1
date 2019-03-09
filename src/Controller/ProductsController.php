@@ -20,9 +20,9 @@ use App\Some\Service\Swift_Mailer;
 
 class ProductsController extends AbstractController
 {
-	protected $mailer;
+    protected $mailer;
 
-	public function __construct(\Swift_Mailer $mailer)
+    public function __construct(\Swift_Mailer $mailer)
     {
         $this->mailer = $mailer;
     }
@@ -31,16 +31,16 @@ class ProductsController extends AbstractController
     public function indexPage()
     {
         return $this->render('tpl/index.html.twig', [
-        	'title' => 'Symfony',
+            'title' => 'Symfony',
         ]);
     }    
     
     //product/add/{date}
     public function productAdd(string $date = 'none')
     {
-    	if( false === $this->validParam($date, 'date' )){
-    		return $this->redirectToRoute('index');
-    	}
+        if( false === $this->validParam($date, 'date' )){
+            return $this->redirectToRoute('index');
+        }
 
         $productList = $this->getList();
 
@@ -66,9 +66,9 @@ class ProductsController extends AbstractController
     //cart/{date}
     public function cartList(string $date)
     {
-    	if( false === $this->validParam($date, 'date' )){
-    		return $this->redirectToRoute('index');
-    	}
+        if( false === $this->validParam($date, 'date' )){
+            return $this->redirectToRoute('index');
+        }
 
         $productDayList = $this->getDoctrine()->getRepository(DbCart::class)->getProdByDay($date);
         
@@ -101,15 +101,15 @@ class ProductsController extends AbstractController
         switch ($type) {
             case 'addProduct':
                 if( false === $this->validParam($day, 'date' )){
-    				return $this->redirectToRoute('index');
-    			}
+                    return $this->redirectToRoute('index');
+                }
 
                 $arrJson = $this->addDBProduct2Cart($day, intval($id));
             break;
             case 'deleteProduct':
                 if( false === $this->validParam($day, 'date' )){
-    				return $this->redirectToRoute('index');
-    			}
+                    return $this->redirectToRoute('index');
+                }
 
                 $arrJson = $this->deleteProductCart($day, intval($id));
             break;
@@ -216,55 +216,55 @@ class ProductsController extends AbstractController
 
     private function validParam($param, string $type = 'int')
     {
-    	$validator = Validation::createValidator();
+        $validator = Validation::createValidator();
 
-    	switch ($type) {
+        switch ($type) {
             case 'date':
                 $arrParam = array(
-    				//new Assert\Length(array('min' => 10, 'max' => 10 )),
-    				new Assert\Date(),
-    				new Assert\NotBlank(),
-				);
+                    //new Assert\Length(array('min' => 10, 'max' => 10 )),
+                    new Assert\Date(),
+                    new Assert\NotBlank(),
+                );
             break;
 
             case 'string':
                 $arrParam = array(
-    				new Assert\Length(array('min' => 2, 'max' => 50 )),
-    				new Assert\Type('string'),
-    				new Assert\NotBlank(),
-				);
+                    new Assert\Length(array('min' => 2, 'max' => 50 )),
+                    new Assert\Type('string'),
+                    new Assert\NotBlank(),
+                );
             break;
 
             case 'int':
             default:
                 $arrParam = array(
-    				new Assert\Type('integer'),
-				);
+                    new Assert\Type('integer'),
+                );
         }
 
-    	$violations = $validator->validate($param, $arrParam);
+        $violations = $validator->validate($param, $arrParam);
 
-		if (0 !== count($violations)) {
-    		return false;
-    	}
+        if (0 !== count($violations)) {
+            return false;
+        }
 
-		return true;
+        return true;
     }
 
     public function sendEmailAdmin(string $textMessage)
     {
-    	$adminEmail = $this->getParameter('admin_email');
+        $adminEmail = $this->getParameter('admin_email');
 
-   		$message = (new \Swift_Message($textMessage))
-       		->setFrom('send@testexample.com')
-        	->setTo($adminEmail)
-        	->setBody(
-            	$textMessage,
-            	'text/html'
+           $message = (new \Swift_Message($textMessage))
+               ->setFrom('send@testexample.com')
+            ->setTo($adminEmail)
+            ->setBody(
+                $textMessage,
+                'text/html'
         );
 
-    	$this->mailer->send($message);
+        $this->mailer->send($message);
 
-		return true;
+        return true;
     }
 }
