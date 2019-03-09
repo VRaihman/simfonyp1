@@ -130,11 +130,13 @@ class ProductsController extends AbstractController
     private function addDbProd(): ?array
     {
         $dbproduct = new DbCart();
+
         $dbproduct->setName('Plastic Cup');
         $dbproduct->setPrice('0.99');
 
         $entityManager->persist($dbproduct);
         $entityManager->flush();
+        
         return $dbproduct;
     }
     
@@ -142,6 +144,7 @@ class ProductsController extends AbstractController
     {
         
         $productInCartByDay = $this->getDoctrine()->getRepository(DbCart::class)->findByDayId($day, $id);
+
         if( count($productInCartByDay) > 0){
             $arrJson = ['status' => 'success' ];
             return $arrJson;
@@ -257,8 +260,8 @@ class ProductsController extends AbstractController
 
            $message = (new \Swift_Message($textMessage))
                ->setFrom('send@testexample.com')
-            ->setTo($adminEmail)
-            ->setBody(
+            	->setTo($adminEmail)
+            	->setBody(
                 $textMessage,
                 'text/html'
         );
