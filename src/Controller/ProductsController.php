@@ -38,7 +38,7 @@ class ProductsController extends AbstractController
     //product/add/{date}
     public function productAdd(string $date = 'none')
     {
-        if( false === $this->validParam($date, 'date' )){
+        if ($this->validParam($date, 'date') === false) {
             return $this->redirectToRoute('index');
         }
 
@@ -46,7 +46,7 @@ class ProductsController extends AbstractController
 
         $toTwig = array();
         $num = 0;
-        foreach($productList as $key => $product){
+        foreach ($productList as $key => $product) {
             $toTwig[] = array(
                 'num' => $num,
                 'name' => $product->getName(),
@@ -66,7 +66,7 @@ class ProductsController extends AbstractController
     //cart/{date}
     public function cartList(string $date)
     {
-        if( false === $this->validParam($date, 'date' )){
+        if ($this->validParam($date, 'date') === false) {
             return $this->redirectToRoute('index');
         }
 
@@ -74,7 +74,7 @@ class ProductsController extends AbstractController
         
         $toTwig = array();
         $num = 0;
-        foreach($productDayList as $key => $product){
+        foreach ($productDayList as $key => $product) {
             $toTwig[] = array(
                 'num' => $num,
                 'name' => $product['name'],
@@ -100,14 +100,14 @@ class ProductsController extends AbstractController
         
         switch ($type) {
             case 'addProduct':
-                if( false === $this->validParam($day, 'date' )){
+                if ($this->validParam($day, 'date' ) === false) {
                     return $this->redirectToRoute('index');
                 }
 
                 $arrJson = $this->addDBProduct2Cart($day, intval($id));
             break;
             case 'deleteProduct':
-                if( false === $this->validParam($day, 'date' )){
+                if ($this->validParam($day, 'date' ) === false) {
                     return $this->redirectToRoute('index');
                 }
 
@@ -145,8 +145,8 @@ class ProductsController extends AbstractController
         
         $productInCartByDay = $this->getDoctrine()->getRepository(DbCart::class)->findByDayId($day, $id);
 
-        if( count($productInCartByDay) > 0){
-            $arrJson = ['status' => 'success' ];
+        if (count($productInCartByDay) > 0) {
+            $arrJson = ['status' => 'success'];
             return $arrJson;
         }
         
@@ -168,7 +168,7 @@ class ProductsController extends AbstractController
 
         $this->sendEmailAdmin("Add product {$productId->name} to cart {$day}");
         
-        $arrJson = ['status' => 'success' ];
+        $arrJson = ['status' => 'success'];
         return $arrJson;
     }    
     
@@ -183,7 +183,7 @@ class ProductsController extends AbstractController
         
         $this->sendEmailAdmin("Delete product {$productInCartByDay[0]['name']} to cart {$day}");
 
-        $arrJson = ['status' => 'success' ];
+        $arrJson = ['status' => 'success'];
         return $arrJson;
     }
 
@@ -192,15 +192,18 @@ class ProductsController extends AbstractController
         $numDay = date('t');
         $data   = date("Y-m-");
         $arrayDay = [];
-        for($i = 1; $i <= $numDay; $i++){
-            if( $i < 10 ) $pref = '0';
-            else $pref = '';
+        for ($i = 1; $i <= $numDay; $i++) {
+            if ($i < 10) {
+            	$pref = '0';
+            } else {
+            	$pref = '';
+            }
 
             $productArray = $this->getDoctrine()->getRepository(DbCart::class)->getProdByDay($data . $pref . $i);
               
-            if( $productArray != [] ){
+            if ($productArray != []) {
                 $prefTitle = 'Products in the cart ' . count($productArray);
-            }else{
+            } else {
                 $prefTitle = '';
             }
             
@@ -213,7 +216,7 @@ class ProductsController extends AbstractController
             
         }
         
-        $arrData = ['days' => $arrayDay ];
+        $arrData = ['days' => $arrayDay];
         return $arrData;
     }
 
@@ -224,7 +227,7 @@ class ProductsController extends AbstractController
         switch ($type) {
             case 'date':
                 $arrParam = array(
-                    //new Assert\Length(array('min' => 10, 'max' => 10 )),
+                    //new Assert\Length(array('min' => 10, 'max' => 10)),
                     new Assert\Date(),
                     new Assert\NotBlank(),
                 );
@@ -247,7 +250,7 @@ class ProductsController extends AbstractController
 
         $violations = $validator->validate($param, $arrParam);
 
-        if (0 !== count($violations)) {
+        if (count($violations) !== 0) {
             return false;
         }
 
@@ -258,14 +261,11 @@ class ProductsController extends AbstractController
     {
         $adminEmail = $this->getParameter('admin_email');
 
-           $message = (new \Swift_Message($textMessage))
-               ->setFrom('send@testexample.com')
-            	->setTo($adminEmail)
-            	->setBody(
-                	$textMessage,
-                	'text/html'
-        );
-
+        $message = (new \Swift_Message($textMessage))
+            ->setFrom('send@testexample.com')
+            ->setTo($adminEmail)
+            ->setBody($textMessage, 'text/html');
+        
         $this->mailer->send($message);
 
         return true;
