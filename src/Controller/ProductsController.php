@@ -20,7 +20,7 @@ use App\Some\Service\Swift_Mailer;
 
 class ProductsController extends AbstractController
 {
-    protected $mailer;
+    public $mailer;
 
     public function __construct(\Swift_Mailer $mailer)
     {
@@ -28,54 +28,54 @@ class ProductsController extends AbstractController
     }
 
     //{type}
-    public function indexPage()
+    public function indexPage(): ?object
     {
-        return $this->render('tpl/index.html.twig', [
-            'title' => 'Symfony',
+        return new JsonResponse([
+            'title' => 'Symfony p1',
         ]);
     }    
     
     //product/add/{date}
-    public function productAdd(string $date = 'none')
+    public function productAdd(string $date = 'none'): ?object
     {
-        if ($this->validParam($date, 'date') === false) {
+        if ($this->validParam($date, 'date') == false) {
             return $this->redirectToRoute('index');
         }
 
         $productList = $this->getList();
 
-        $toTwig = array();
+        $toTwig = [];
         $num = 0;
         foreach ($productList as $key => $product) {
-            $toTwig[] = array(
+            $toTwig[] = [
                 'num' => $num,
                 'name' => $product->getName(),
                 'amount' => $product->getPrice(),
                 'pid' => $product->getId(),
                 'date' => $date,
-            );
+            ];
             $num++;
         }
         
-        return $this->render('tpl/addproduct.html.twig', [
+        return new JsonResponse([
             'date'  => $date,
             'prods' => $toTwig,
         ]);
     }
     
     //cart/{date}
-    public function cartList(string $date)
+    public function cartList(string $date): ?object
     {
-        if ($this->validParam($date, 'date') === false) {
+        if ($this->validParam($date, 'date') == false) {
             return $this->redirectToRoute('index');
         }
 
         $productDayList = $this->getDoctrine()->getRepository(DbCart::class)->getProdByDay($date);
         
-        $toTwig = array();
+        $toTwig = [];
         $num = 0;
         foreach ($productDayList as $key => $product) {
-            $toTwig[] = array(
+            $toTwig[] = [
                 'num' => $num,
                 'name' => $product['name'],
                 'amount' => $product['price'],
@@ -83,31 +83,32 @@ class ProductsController extends AbstractController
                 'date' => $date,
                 'buydate' => $product['dateadd'],
                 'updatedate' => $product['dateupdate'],
-            );
+            ];
             $num++;
         }
-        return $this->render('tpl/cart.html.twig', [
+
+        return new JsonResponse([
             'date'  => $date,
             'prods' => $toTwig,
         ]);
     }    
     
     //ajax/{type}
-    public function jsonPage(string $type = 'getEvents', Request $request)
+    public function jsonPage(string $type = 'getEvents', Request $request): ?object
     {
         $day = $request->request->get('date');
         $id  = $request->request->get('id', 0);
         
         switch ($type) {
             case 'addProduct':
-                if ($this->validParam($day, 'date' ) === false) {
+                if ($this->validParam($day, 'date' ) == false) {
                     return $this->redirectToRoute('index');
                 }
 
                 $arrJson = $this->addDBProduct2Cart($day, intval($id));
             break;
             case 'deleteProduct':
-                if ($this->validParam($day, 'date' ) === false) {
+                if ($this->validParam($day, 'date' ) == false) {
                     return $this->redirectToRoute('index');
                 }
 
@@ -181,7 +182,7 @@ class ProductsController extends AbstractController
         $em->remove($product);
         $em->flush();
         
-        $this->sendEmailAdmin("Delete product {$productInCartByDay[0]['name']} to cart {$day}");
+        $this->sendEmailAdmin('Delete product ' . $productInCartByDay[0]['name'] . ' to cart ' . $day);
 
         $arrJson = ['status' => 'success'];
         return $arrJson;
@@ -208,7 +209,7 @@ class ProductsController extends AbstractController
             }
             
             $arrayDay[] = [
-                'title' => "Edit Products\r\n" . $prefTitle,
+                'title' => 'Edit Products' . PHP_EOL . $prefTitle,
                 'url'   => 'cart/' . $data . $pref . $i,
                 'start' => $data . $pref . $i,
                 'color' => 'green',
@@ -220,44 +221,43 @@ class ProductsController extends AbstractController
         return $arrData;
     }
 
-    private function validParam($param, string $type = 'int')
+    private function validParam($param, string $type = 'int'): ?bool
     {
         $validator = Validation::createValidator();
 
         switch ($type) {
             case 'date':
-                $arrParam = array(
-                    //new Assert\Length(array('min' => 10, 'max' => 10)),
+                $arrParam = [
                     new Assert\Date(),
                     new Assert\NotBlank(),
-                );
+                ];
             break;
 
             case 'string':
-                $arrParam = array(
-                    new Assert\Length(array('min' => 2, 'max' => 50 )),
+                $arrParam = [
+                    new Assert\Length(['min' => 2, 'max' => 50]),
                     new Assert\Type('string'),
                     new Assert\NotBlank(),
-                );
+                ];
             break;
 
             case 'int':
             default:
-                $arrParam = array(
+                $arrParam = [
                     new Assert\Type('integer'),
-                );
+                ];
         }
 
         $violations = $validator->validate($param, $arrParam);
 
-        if (count($violations) !== 0) {
+        if (count($violations) != 0) {
             return false;
         }
 
         return true;
     }
 
-    public function sendEmailAdmin(string $textMessage)
+    public function sendEmailAdmin(string $textMessage): ?bool
     {
         $adminEmail = $this->getParameter('admin_email');
 
