@@ -2,20 +2,15 @@
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints as Assert;
-
 use App\Entity\DbProduct;
 use App\Entity\DbCart;
-
 use App\Some\Service\Swift_Mailer;
 
 class ProductsController extends AbstractController
@@ -28,7 +23,7 @@ class ProductsController extends AbstractController
     }
 
     //{type}
-    public function indexPage(): ?object
+    public function indexPage(): JsonResponse
     {
         return new JsonResponse([
             'title' => 'Symfony p1',
@@ -36,7 +31,7 @@ class ProductsController extends AbstractController
     }    
     
     //product/add/{date}
-    public function productAdd(string $date = 'none'): ?object
+    public function productAdd(string $date = 'none'): JsonResponse
     {
         if ($this->validParam($date, 'date') == false) {
             return $this->redirectToRoute('index');
@@ -64,7 +59,7 @@ class ProductsController extends AbstractController
     }
     
     //cart/{date}
-    public function cartList(string $date): ?object
+    public function cartList(string $date): JsonResponse
     {
         if ($this->validParam($date, 'date') == false) {
             return $this->redirectToRoute('index');
@@ -94,7 +89,7 @@ class ProductsController extends AbstractController
     }    
     
     //ajax/{type}
-    public function jsonPage(string $type = 'getEvents', Request $request): ?object
+    public function jsonPage(string $type = 'getEvents', Request $request): object
     {
         $day = $request->request->get('date');
         $id  = $request->request->get('id', 0);
@@ -123,12 +118,12 @@ class ProductsController extends AbstractController
         return new JsonResponse($arrJson);
     }
     
-    public function getList(): ?array
+    public function getList(): array
     {
         return $this->getDoctrine()->getRepository(DbProduct::class)->findAll();
     }
     
-    private function addDbProd(): ?array
+    private function addDbProd(): array
     {
         $dbproduct = new DbCart();
 
@@ -141,7 +136,7 @@ class ProductsController extends AbstractController
         return $dbproduct;
     }
     
-    public function addDBProduct2Cart(string $day, int $id): ?array
+    public function addDBProduct2Cart(string $day, int $id): array
     {
         
         $productInCartByDay = $this->getDoctrine()->getRepository(DbCart::class)->findByDayId($day, $id);
@@ -172,7 +167,7 @@ class ProductsController extends AbstractController
         return $arrJson;
     }    
     
-    public function deleteProductCart(string $day, int $id): ?array
+    public function deleteProductCart(string $day, int $id): array
     {
         $productInCartByDay = $this->getDoctrine()->getRepository(DbCart::class)->findByDayId($day, $id);
 
@@ -187,7 +182,7 @@ class ProductsController extends AbstractController
         return $arrJson;
     }
 
-    private function getEvents(): ?array
+    private function getEvents(): array
     {
         $numDay = date('t');
         $data   = date('Y-m-');
@@ -220,7 +215,7 @@ class ProductsController extends AbstractController
         return $arrData;
     }
 
-    private function validParam($param, string $type = 'int'): ?bool
+    private function validParam($param, string $type = 'int'): bool
     {
         $validator = Validation::createValidator();
 
@@ -256,7 +251,7 @@ class ProductsController extends AbstractController
         return true;
     }
 
-    public function sendEmailAdmin(string $textMessage): ?bool
+    public function sendEmailAdmin(string $textMessage): bool
     {
         $adminEmail = $this->getParameter('admin_email');
 
