@@ -158,15 +158,15 @@ class ProductsController extends AbstractController
         $dbcart = new DbCart();
         $dbcart->setName($productId->name);
         $dbcart->setPrice($productId->price);
-        $dbcart->setDateadd(date("Y-m-d H:i:s"));
-        $dbcart->setDateupdate(date("Y-m-d H:i:s"));
+        $dbcart->setDateadd(date('Y-m-d H:i:s'));
+        $dbcart->setDateupdate(date('Y-m-d H:i:s'));
         $dbcart->setDate($day);
         $dbcart->setIdprod($productId->id);
 
         $entityManager->persist($dbcart);
         $entityManager->flush();
 
-        $this->sendEmailAdmin("Add product {$productId->name} to cart {$day}");
+        $this->sendEmailAdmin('Add product ' . $productId->name . ' to cart' . $day);
         
         $arrJson = ['status' => 'success'];
         return $arrJson;
@@ -190,7 +190,7 @@ class ProductsController extends AbstractController
     private function getEvents(): ?array
     {
         $numDay = date('t');
-        $data   = date("Y-m-");
+        $data   = date('Y-m-');
         $arrayDay = [];
         for ($i = 1; $i <= $numDay; $i++) {
             if ($i < 10) {
