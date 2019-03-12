@@ -14,42 +14,42 @@ class DbCart
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    public $id;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
      */
-    private $name;
+    public $name;
 
     /**
      * @ORM\Column(type="string", length=12, nullable=true)
      */
-    private $price;
+    public $price;
 
     /**
      * @ORM\Column(type="string", length=15, nullable=true)
      */
-    private $date;
+    public $date;
 
     /**
      * @ORM\Column(type="string", length=15, nullable=true)
      */
-    private $dateadd;
+    public $dateadd;
 
     /**
      * @ORM\Column(type="string", length=15, nullable=true)
      */
-    private $dateupdate;
+    public $dateupdate;
 
     /**
      * @ORM\Column(type="string", length=15, nullable=true)
      */
-    private $idday;
+    public $idday;
 
     /**
      * @ORM\Column(type="string", length=10)
      */
-    private $idprod;
+    public $idprod;
 
     public function getId(): ?int
     {

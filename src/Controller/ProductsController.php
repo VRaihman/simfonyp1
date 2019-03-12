@@ -70,19 +70,19 @@ class ProductsController extends AbstractController
             return $this->redirectToRoute('index');
         }
 
-        $productDayList = $this->getDoctrine()->getRepository(DbCart::class)->getProdByDay($date);
-        
+        $productDayList = $this->getDoctrine()->getRepository(DbCart::class)->findBy(['date' => $date]);
+
         $toTwig = [];
         $num = 0;
         foreach ($productDayList as $key => $product) {
             $toTwig[] = [
                 'num' => $num,
-                'name' => $product['name'],
-                'amount' => $product['price'],
-                'pid' => $product['idprod'],
+                'name' => $product->name,
+                'amount' => $product->price,
+                'pid' => $product->idprod,
                 'date' => $date,
-                'buydate' => $product['dateadd'],
-                'updatedate' => $product['dateupdate'],
+                'buydate' => $product->dateadd,
+                'updatedate' => $product->dateupdate,
             ];
             $num++;
         }
@@ -152,7 +152,6 @@ class ProductsController extends AbstractController
         }
         
         $productId = $this->getDoctrine()->getRepository(DbProduct::class)->getProd($id);
-        $productId = (object) $productId[0];
 
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -178,11 +177,11 @@ class ProductsController extends AbstractController
         $productInCartByDay = $this->getDoctrine()->getRepository(DbCart::class)->findByDayId($day, $id);
 
         $em = $this->getDoctrine()->getManager();
-        $product = $em->getRepository(DbCart::class)->find($productInCartByDay[0]['id']);
+        $product = $em->getRepository(DbCart::class)->find($productInCartByDay->id);
         $em->remove($product);
         $em->flush();
         
-        $this->sendEmailAdmin('Delete product ' . $productInCartByDay[0]['name'] . ' to cart ' . $day);
+        $this->sendEmailAdmin('Delete product ' . $productInCartByDay->id . ' to cart ' . $day);
 
         $arrJson = ['status' => 'success'];
         return $arrJson;
@@ -200,7 +199,7 @@ class ProductsController extends AbstractController
             	$pref = '';
             }
 
-            $productArray = $this->getDoctrine()->getRepository(DbCart::class)->getProdByDay($data . $pref . $i);
+            $productArray = $this->getDoctrine()->getRepository(DbCart::class)->findBy(['date' => $data . $pref . $i]);
               
             if ($productArray != []) {
                 $prefTitle = 'Products in the cart ' . count($productArray);

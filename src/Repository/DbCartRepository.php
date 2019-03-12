@@ -23,53 +23,16 @@ class DbCartRepository extends ServiceEntityRepository
     //  * @return DbCart[] Returns an array of DbCart objects
     //  */
     
-    public function findByDayId($day, $id): ?array
-    {
-		$conn = $this->getEntityManager()->getConnection();
-
-		$sql = '
-			SELECT * FROM db_cart WHERE date = :day and idprod = :id
-        ';
-		$stmt = $conn->prepare($sql);
-		$stmt->execute(['day' => $day, 'id' => $id ]);
-
-		return $stmt->fetchAll();
-    }
-    
-    public function cleareDB()
-    {
-		$conn = $this->getEntityManager()->getConnection();
-
-		$sql = '
-			DELETE FROM db_cart WHERE id <> 0
-        ';
-		$stmt = $conn->prepare($sql);
-
-		return $stmt->fetchAll();
-    }    
-	
-	public function getProdByDay($day): ?array
-    {
-		$conn = $this->getEntityManager()->getConnection();
-
-		$sql = '
-			SELECT * FROM db_cart WHERE date = :day
-        ';
-		$stmt = $conn->prepare($sql);
-		$stmt->execute(['day' => $day]);
-
-		return $stmt->fetchAll();
-    }
-
-    /*
-    public function findOneBySomeField($value): ?DbCart
+    public function findByDayId(string $day, int $id): ?DbCart
     {
         return $this->createQueryBuilder('d')
-            ->andWhere('d.exampleField = :val')
-            ->setParameter('val', $value)
+            ->andWhere('d.date = :val')
+            ->setParameter('val', $day)
+            ->andWhere('d.idprod = :id')
+            ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult()
         ;
     }
-    */
+    
 }
