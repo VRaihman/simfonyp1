@@ -17,12 +17,12 @@ use App\Some\Service\Swift_Mailer;
 class ProductsController extends AbstractController
 {
     public $mailer;
-	public $validator;
+    public $validator;
 
     public function __construct(\Swift_Mailer $mailer, ValidatorInterface $validator)
     {
         $this->mailer = $mailer;
-		$this->validator = $validator;
+        $this->validator = $validator;
     }
 
     //{type}
@@ -180,9 +180,9 @@ class ProductsController extends AbstractController
         $ArrayDay = [];
         for ($i = 1; $i <= $NumDay; $i++) {
             if ($i < 10) {
-            	$pref = '0';
+                $pref = '0';
             } else {
-            	$pref = '';
+                $pref = '';
             }
 
             $ProductArray = $this->getDoctrine()->getRepository(DbCart::class)->findBy(['date' => $data . $pref . $i]);
