@@ -34,22 +34,22 @@ class DbCart
     /**
      * @ORM\Column(type="string", length=15, nullable=true)
      */
-    public $dateadd;
+    public $dateAdd;
 
     /**
      * @ORM\Column(type="string", length=15, nullable=true)
      */
-    public $dateupdate;
+    public $dateUpdate;
 
     /**
      * @ORM\Column(type="string", length=15, nullable=true)
      */
-    public $idday;
+    public $idDay;
 
     /**
      * @ORM\Column(type="string", length=10)
      */
-    public $idprod;
+    public $idProd;
 
     public function getId(): ?int
     {
@@ -94,48 +94,48 @@ class DbCart
 
     public function getDateadd(): ?string
     {
-        return $this->dateadd;
+        return $this->dateAdd;
     }
 
     public function setDateadd(?string $dateadd): self
     {
-        $this->dateadd = $dateadd;
+        $this->dateAdd = $dateAdd;
 
         return $this;
     }
 
-    public function getDateupdate(): ?string
+    public function getdateUpdate(): ?string
     {
-        return $this->dateupdate;
+        return $this->dateUpdate;
     }
 
-    public function setDateupdate(?string $dateupdate): self
+    public function setdateUpdate(?string $dateUpdate): self
     {
-        $this->dateupdate = $dateupdate;
+        $this->dateUpdate = $dateUpdate;
 
         return $this;
     }
 
-    public function getIdday(): ?string
+    public function getidDay(): ?string
     {
-        return $this->idday;
+        return $this->idDay;
     }
 
-    public function setIdday(?string $idday): self
+    public function setidDay(?string $idDay): self
     {
-        $this->idday = $idday;
+        $this->idDay = $idDay;
 
         return $this;
     }
 
-    public function getIdprod(): ?string
+    public function getidProd(): ?string
     {
-        return $this->idprod;
+        return $this->idProd;
     }
 
-    public function setIdprod(string $idprod): self
+    public function setidProd(string $idProd): self
     {
-        $this->idprod = $idprod;
+        $this->idProd = $idProd;
 
         return $this;
     }

@@ -1,5 +1,4 @@
-<?php
-
+<?php 
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -14,17 +13,17 @@ class DbProduct
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
-    private $id;
+    public $id;
 
     /**
      * @ORM\Column(type="text")
      */
-    private $name;
+    public $name;
 
     /**
      * @ORM\Column(type="float", nullable=true)
      */
-    private $price;
+    public $price;
 
     public function getId(): ?int
     {

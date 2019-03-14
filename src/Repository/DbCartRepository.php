@@ -1,4 +1,4 @@
-<?php
+<?php 
 namespace App\Repository;
 
 use App\Entity\DbCart;
@@ -24,10 +24,10 @@ class DbCartRepository extends ServiceEntityRepository
     
     public function findByDayId(string $day, int $id): ?DbCart
     {
-        return $this->createQueryBuilder('d')
+        return $this->createQueryBuilder('*')
             ->andWhere('d.date = :val')
             ->setParameter('val', $day)
-            ->andWhere('d.idprod = :id')
+            ->andWhere('d.idProd = :id')
             ->setParameter('id', $id)
             ->getQuery()
             ->getOneOrNullResult()

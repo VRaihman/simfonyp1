@@ -7,19 +7,27 @@ index:
         type: index.php|index.html
 
 product:
-    path:      /product/add/{date}
-    controller: App\Controller\ProductsController::productAdd
+    path:      /product/{id}
+    controller: App\Controller\ProductsController::getProductList
+    methods: GET
     defaults:
-        date: 0000-00-00
+        id: all
+    
+calendar:
+    path:      /calendar/
+    controller: App\Controller\ProductsController::cartList
+    methods: GET
         
 cart:
     path:      /cart/{date}
-    controller: App\Controller\ProductsController::cartList
+    controller: App\Controller\ProductsController::cartType
     defaults:
-        date: 0000-00-00
+        date: '0000-00-00'
+    methods: GET
         
-ajax:
-    path:      /ajax/{type}
-    controller: App\Controller\ProductsController::jsonPage
+cartType:
+    path:      /cart/{date}/{id}
+    controller: App\Controller\ProductsController::cartType
     defaults:
-        type: none
+        date: 0000-00-00, id:0
+    methods: POST|DELETE|PUT
